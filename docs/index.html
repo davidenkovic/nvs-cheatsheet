@@ -480,6 +480,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_simple_post">6.2. Simple post</a></li>
 <li><a href="#_sequencegenerator">6.3. SequenceGenerator</a></li>
 <li><a href="#_application_properties_for_hibernate">6.4. Application Properties for Hibernate</a></li>
+<li><a href="#_rbac">6.5. RBAC</a></li>
 </ul>
 </li>
 </ul>
@@ -957,12 +958,44 @@ Date &#8594; %tF</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_rbac"><a class="anchor" href="#_rbac"></a>6.5. RBAC</h3>
+<div class="listingblock">
+<div class="title">HTTP Request</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="http request">GET http://localhost:8080/api/admin
+Authorization: Basic admin admin</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">GET</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@GET</span>
+<span class="nd">@RolesAllowed</span><span class="o">({</span><span class="s">"admin"</span><span class="o">})</span>
+<span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN</span><span class="o">)</span>
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"/admin"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">String</span> <span class="nf">adminResource</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">"admin"</span><span class="o">;</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Properties</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.security.users.embedded.enabled</span><span class="p">=</span><span class="s">true</span>
+<span class="py">quarkus.security.users.embedded.realm-name</span><span class="p">=</span><span class="s">Quarkus</span>
+<span class="py">quarkus.security.users.embedded.plain-text</span><span class="p">=</span><span class="s">true</span>
+<span class="py">quarkus.security.users.embedded.users.admin</span><span class="p">=</span><span class="s">admin</span>
+<span class="py">quarkus.security.users.embedded.roles.admin</span><span class="p">=</span><span class="s">admin</span></code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-12-02 16:21:04 UTC
+Last updated 2021-12-02 17:49:21 UTC
 </div>
 </div>
 <style>
