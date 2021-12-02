@@ -477,7 +477,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_sequencegenerator">7. SequenceGenerator</a></li>
 <li><a href="#_application_properties_for_hibernate">8. Application Properties for Hibernate</a></li>
 <li><a href="#_rbac">9. RBAC</a></li>
-<li><a href="#_read_json">10. READ Json</a></li>
+<li><a href="#_read_json">10. Read Json</a></li>
 </ul>
 </div>
 </div>
@@ -939,10 +939,10 @@ Authorization: Basic admin admin</code></pre>
 <pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.security.users.embedded.enabled</span><span class="p">=</span><span class="s">true</span>
 <span class="py">quarkus.security.users.embedded.realm-name</span><span class="p">=</span><span class="s">Quarkus</span>
 <span class="py">quarkus.security.users.embedded.plain-text</span><span class="p">=</span><span class="s">true</span>
-<span class="py">quarkus.security.users.embedded.users.admin</span><span class="p">=</span><span class="s">admin</span>
-<span class="py">quarkus.security.users.embedded.roles.admin</span><span class="p">=</span><span class="s">admin</span>
+<span class="py">quarkus.security.users.embedded.users.chef</span><span class="p">=</span><span class="s">passme1</span>
+<span class="py">quarkus.security.users.embedded.roles.chef</span><span class="p">=</span><span class="s">admin</span>
 
-<span class="py">quarkus.http.auth.basic</span><span class="p">=</span><span class="s">false</span>
+<span class="py">quarkus.http.auth.basic</span><span class="p">=</span><span class="s">true</span>
 <span class="py">quarkus.http.auth.form.enabled</span><span class="p">=</span><span class="s">true</span></code></pre>
 </div>
 </div>
@@ -956,15 +956,159 @@ Authorization: Basic admin admin</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_read_json"><a class="anchor" href="#_read_json"></a>10. READ Json</h2>
+<h2 id="_read_json"><a class="anchor" href="#_read_json"></a>10. Read Json</h2>
 <div class="sectionbody">
+<details>
+<summary class="title">ReadJson</summary>
+<div class="content">
+<div class="listingblock">
+<div class="title">initbean</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Transactional</span>
+    <span class="kt">void</span> <span class="nf">onStartup</span><span class="o">(</span><span class="nd">@Observes</span> <span class="nc">StartupEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="n">jsonString</span> <span class="o">=</span> <span class="n">readFile</span><span class="o">(</span><span class="s">"data.json"</span><span class="o">);</span>
+        <span class="nc">JsonReader</span> <span class="n">jsonReader</span> <span class="o">=</span> <span class="nc">Json</span><span class="o">.</span><span class="na">createReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">StringReader</span><span class="o">(</span><span class="n">jsonString</span><span class="o">));</span>
+        <span class="nc">JsonArray</span> <span class="n">jsonArray</span> <span class="o">=</span> <span class="n">jsonReader</span><span class="o">.</span><span class="na">readArray</span><span class="o">();</span>
 
+        <span class="k">for</span> <span class="o">(</span><span class="kt">var</span> <span class="n">item</span> <span class="o">:</span> <span class="n">jsonArray</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kt">var</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="na">asJsonObject</span><span class="o">();</span>
+            <span class="kt">var</span> <span class="n">newPerson</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Person</span><span class="o">();</span>
+            <span class="n">newPerson</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="s">"age"</span><span class="o">));</span>
+            <span class="n">newPerson</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"name"</span><span class="o">));</span>
+
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">EnrolledSubject</span><span class="o">&gt;</span> <span class="n">subjects</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedList</span><span class="o">&lt;&gt;();</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">var</span> <span class="n">array</span> <span class="o">:</span> <span class="n">jsonObject</span><span class="o">.</span><span class="na">getJsonArray</span><span class="o">(</span><span class="s">"enrolledSubjects"</span><span class="o">))</span> <span class="o">{</span>
+                <span class="kt">var</span> <span class="n">subjectObject</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">asJsonObject</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nc">EnrolledSubject</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="n">subjectObject</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"name"</span><span class="o">)).</span><span class="na">firstResult</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="kt">var</span> <span class="n">newSubject</span> <span class="o">=</span> <span class="o">(</span><span class="nc">EnrolledSubject</span><span class="o">)</span> <span class="nc">EnrolledSubject</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="n">subjectObject</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"name"</span><span class="o">)).</span><span class="na">firstResult</span><span class="o">();</span>
+                    <span class="n">subjects</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">newSubject</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="kt">var</span> <span class="n">newSubject</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">EnrolledSubject</span><span class="o">();</span>
+                    <span class="n">newSubject</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="n">subjectObject</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"name"</span><span class="o">));</span>
+                    <span class="n">newSubject</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">();</span>
+                    <span class="n">subjects</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">newSubject</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">newPerson</span><span class="o">.</span><span class="na">setEnrolledSubjects</span><span class="o">(</span><span class="n">subjects</span><span class="o">);</span>
+            <span class="n">newPerson</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">initbean</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="nf">readFile</span><span class="o">(</span><span class="nc">String</span> <span class="n">fileName</span><span class="o">)</span> <span class="o">{</span>
+        <span class="no">URL</span> <span class="n">url</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">().</span><span class="na">getResource</span><span class="o">(</span><span class="n">fileName</span><span class="o">);</span>
+        <span class="k">assert</span> <span class="n">url</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">Stream</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">stream</span> <span class="o">=</span> <span class="nc">Files</span><span class="o">.</span><span class="na">lines</span><span class="o">(</span><span class="nc">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">url</span><span class="o">.</span><span class="na">getPath</span><span class="o">()),</span> <span class="nc">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">stream</span><span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">joining</span><span class="o">());</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EnrolledSubject</span> <span class="kd">extends</span> <span class="nc">PanacheEntityBase</span> <span class="o">{</span>
+    <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="nc">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span><span class="o">)</span>
+    <span class="nd">@Id</span>
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nc">Long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EnrolledSubject</span> <span class="kd">extends</span> <span class="nc">PanacheEntityBase</span> <span class="o">{</span>
+    <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="nc">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span><span class="o">)</span>
+    <span class="nd">@Id</span>
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nc">Long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span> <span class="kd">extends</span> <span class="nc">PanacheEntityBase</span> <span class="o">{</span>
+
+    <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="nc">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span><span class="o">)</span>
+    <span class="nd">@Id</span>
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">age</span><span class="o">;</span>
+
+    <span class="nd">@ManyToMany</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">EnrolledSubject</span><span class="o">&gt;</span> <span class="n">enrolledSubjects</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nc">Long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getAge</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">age</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setAge</span><span class="o">(</span><span class="kt">int</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">EnrolledSubject</span><span class="o">&gt;</span> <span class="nf">getEnrolledSubjects</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">enrolledSubjects</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setEnrolledSubjects</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">EnrolledSubject</span><span class="o">&gt;</span> <span class="n">enrolledSubjects</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">enrolledSubjects</span> <span class="o">=</span> <span class="n">enrolledSubjects</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+</details>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-12-02 20:36:25 UTC
+Last updated 2021-12-02 20:27:12 UTC
 </div>
 </div>
 <style>
