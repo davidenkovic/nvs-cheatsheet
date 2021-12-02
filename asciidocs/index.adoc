@@ -7,8 +7,10 @@
 * link:https://quarkus.io/guides/websockets[websockets]
 * link:https://quarkus.io/guides/security[security]
 * link:https://edufs.edu.htl-leonding.ac.at/~t.stuetz/download/nvs/scripts/[scripts]
-* link:https://stackoverflow.com/questions/65387621/how-to-post-form-based-authentication[emina bitte erklären!]
+* link:https://stackoverflow.com/questions/65387621/how-to-post-form-based-authentication[emina form bitte erklären!]
 * link:https://quarkus.io/guides/getting-started-testing[quarkus tests]
+* link:https://quarkus.io/guides/security-properties[security-properties]
+* link:https://davidenkovic.github.io/school-notes/jpa-test.html[JPA]
 
 == Entity
 
