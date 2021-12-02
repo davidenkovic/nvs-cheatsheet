@@ -353,10 +353,10 @@ public String adminResource() {
 quarkus.security.users.embedded.enabled=true
 quarkus.security.users.embedded.realm-name=Quarkus
 quarkus.security.users.embedded.plain-text=true
-quarkus.security.users.embedded.users.admin=admin
-quarkus.security.users.embedded.roles.admin=admin
+quarkus.security.users.embedded.users.chef=passme1
+quarkus.security.users.embedded.roles.chef=admin
 
-quarkus.http.auth.basic=false
+quarkus.http.auth.basic=true
 quarkus.http.auth.form.enabled=true
 ----
 
@@ -367,4 +367,150 @@ quarkus.http.auth.form.enabled=true
 SecurityIdentity securityIdentity;
 ----
 
-== READ Json
+== Read Json
+
+.ReadJson
+[%collapsible]
+====
+.initbean
+[source,java]
+----
+@Transactional
+    void onStartup(@Observes StartupEvent event) {
+        var jsonString = readFile("data.json");
+        JsonReader jsonReader = Json.createReader(new StringReader(jsonString));
+        JsonArray jsonArray = jsonReader.readArray();
+
+        for (var item : jsonArray) {
+            var jsonObject = item.asJsonObject();
+            var newPerson = new Person();
+            newPerson.setAge(jsonObject.getInt("age"));
+            newPerson.setName(jsonObject.getString("name"));
+
+            List<EnrolledSubject> subjects = new LinkedList<>();
+            for (var array : jsonObject.getJsonArray("enrolledSubjects")) {
+                var subjectObject = array.asJsonObject();
+                if (EnrolledSubject.find("name", subjectObject.getString("name")).firstResult() != null) {
+                    var newSubject = (EnrolledSubject) EnrolledSubject.find("name", subjectObject.getString("name")).firstResult();
+                    subjects.add(newSubject);
+                } else {
+                    var newSubject = new EnrolledSubject();
+                    newSubject.setName(subjectObject.getString("name"));
+                    newSubject.persistAndFlush();
+                    subjects.add(newSubject);
+                }
+            }
+            newPerson.setEnrolledSubjects(subjects);
+            newPerson.persistAndFlush();
+        }
+    }
+----
+
+.initbean
+[source,java]
+----
+String readFile(String fileName) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        assert url != null;
+        try (Stream<String> stream = Files.lines(Paths.get(url.getPath()), StandardCharsets.UTF_8)) {
+            return stream.collect(Collectors.joining());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+----
+
+
+[source,java]
+----
+@Entity
+public class EnrolledSubject extends PanacheEntityBase {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    private Long id;
+    private String name;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+----
+
+[source,java]
+----
+@Entity
+public class EnrolledSubject extends PanacheEntityBase {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    private Long id;
+    private String name;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+----
+
+[source, java]
+----
+@Entity
+public class Person extends PanacheEntityBase {
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    private Long id;
+
+    private String name;
+    private int age;
+
+    @ManyToMany
+    private List<EnrolledSubject> enrolledSubjects;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public List<EnrolledSubject> getEnrolledSubjects() {
+        return enrolledSubjects;
+    }
+
+    public void setEnrolledSubjects(List<EnrolledSubject> enrolledSubjects) {
+        this.enrolledSubjects = enrolledSubjects;
+    }
+}
+----
+====
+
