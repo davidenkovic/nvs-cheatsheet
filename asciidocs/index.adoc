@@ -374,3 +374,34 @@ quarkus.datasource.jdbc.url = jdbc:postgresql://localhost:5432/db
 quarkus.hibernate-orm.database.generation = drop-and-create
 
 ----
+
+=== RBAC
+
+.HTTP Request
+[source,http request]
+----
+GET http://localhost:8080/api/admin
+Authorization: Basic admin admin
+----
+
+.GET
+[source, java]
+----
+@GET
+@RolesAllowed({"admin"})
+@Produces(MediaType.TEXT_PLAIN)
+@Path("/admin")
+public String adminResource() {
+    return "admin";
+}
+----
+
+.Properties
+[source,properties]
+----
+quarkus.security.users.embedded.enabled=true
+quarkus.security.users.embedded.realm-name=Quarkus
+quarkus.security.users.embedded.plain-text=true
+quarkus.security.users.embedded.users.admin=admin
+quarkus.security.users.embedded.roles.admin=admin
+----
