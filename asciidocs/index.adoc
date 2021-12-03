@@ -1,5 +1,7 @@
 = Cheatsheet NVS 5AHIF 2021
 
+*Wichtig!* Seite immer neu laden, um auf den neusten Stand zu sein.
+
 == Wichtige Links
 
 .links
@@ -14,10 +16,13 @@
 * link:https://quarkus.io/guides/getting-started-testing[quarkus tests]
 * link:https://quarkus.io/guides/security-properties[security-properties]
 * link:https://davidenkovic.github.io/school-notes/jpa-test.html[JPA]
+* link:https://dev.to/jhonifaber/hibernate-onetoone-onetomany-manytoone-and-manytomany-8ba[JPA 2]
 * link:http://fxapps.blogspot.com/2019/12/quarkus-application-with-form.html[quarkus-application-with-form]
 * link:https://quarkus.io/guides/security-built-in-authentication[security-built-in-authentication]
 * link:https://stackoverflow.com/a/43045241[read JSON]
 * link:https://quarkus.io/guides/security-jdbc[security-jdbc]
+* link:https://assertj.github.io/doc/#assertj-db[assertj-db]
+* link:https://assertj.github.io/doc/#assertj-core[assertj-core]
 
 ====
 
@@ -356,7 +361,8 @@ quarkus.security.users.embedded.plain-text=true
 quarkus.security.users.embedded.users.chef=passme1
 quarkus.security.users.embedded.roles.chef=admin
 
-quarkus.http.auth.basic=true
+# quarkus.http.auth.basic=false  muss false sein falls quarkus.http.auth.form.enabled=true ist
+quarkus.http.auth.basic=false
 quarkus.http.auth.form.enabled=true
 ----
 
