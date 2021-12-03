@@ -482,6 +482,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Wichtig!</strong> Seite immer neu laden, um auf den neusten Stand zu sein.</p>
+</div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="_wichtige_links"><a class="anchor" href="#_wichtige_links"></a>1. Wichtige Links</h2>
 <div class="sectionbody">
@@ -515,6 +522,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><a href="https://davidenkovic.github.io/school-notes/jpa-test.html">JPA</a></p>
 </li>
 <li>
+<p><a href="https://dev.to/jhonifaber/hibernate-onetoone-onetomany-manytoone-and-manytomany-8ba">JPA 2</a></p>
+</li>
+<li>
 <p><a href="http://fxapps.blogspot.com/2019/12/quarkus-application-with-form.html">quarkus-application-with-form</a></p>
 </li>
 <li>
@@ -525,6 +535,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li>
 <p><a href="https://quarkus.io/guides/security-jdbc">security-jdbc</a></p>
+</li>
+<li>
+<p><a href="https://assertj.github.io/doc/#assertj-db">assertj-db</a></p>
+</li>
+<li>
+<p><a href="https://assertj.github.io/doc/#assertj-core">assertj-core</a></p>
 </li>
 </ul>
 </div>
@@ -942,7 +958,8 @@ Authorization: Basic admin admin</code></pre>
 <span class="py">quarkus.security.users.embedded.users.chef</span><span class="p">=</span><span class="s">passme1</span>
 <span class="py">quarkus.security.users.embedded.roles.chef</span><span class="p">=</span><span class="s">admin</span>
 
-<span class="py">quarkus.http.auth.basic</span><span class="p">=</span><span class="s">true</span>
+<span class="c"># quarkus.http.auth.basic=false  muss false sein falls quarkus.http.auth.form.enabled=true ist
+</span><span class="py">quarkus.http.auth.basic</span><span class="p">=</span><span class="s">false</span>
 <span class="py">quarkus.http.auth.form.enabled</span><span class="p">=</span><span class="s">true</span></code></pre>
 </div>
 </div>
@@ -1101,6 +1118,30 @@ Authorization: Basic admin admin</code></pre>
 <span class="o">}</span></code></pre>
 </div>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Emina"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"age"</span><span class="p">:</span><span class="w"> </span><span class="mi">18</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"enrolledSubjects"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mathe"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">}</span><span class="err">,</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dave"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"age"</span><span class="p">:</span><span class="w"> </span><span class="mi">18</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"enrolledSubjects"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mathe"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span></code></pre>
+</div>
+</div>
 </div>
 </details>
 </div>
@@ -1108,7 +1149,7 @@ Authorization: Basic admin admin</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-12-02 20:27:12 UTC
+Last updated 2021-12-03 07:19:34 UTC
 </div>
 </div>
 <style>
