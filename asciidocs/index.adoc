@@ -512,5 +512,29 @@ public class Person extends PanacheEntityBase {
     }
 }
 ----
+
+[source, json]
+----
+
+  {
+    "name": "Emina",
+    "age": 18,
+    "enrolledSubjects": [
+      {
+        "name": "Mathe"
+      }
+    ]
+  },
+  {
+    "name": "Dave",
+    "age": 18,
+    "enrolledSubjects": [
+      {
+        "name": "Mathe"
+      }
+    ]
+  }
+]
+----
 ====
 
