@@ -24,6 +24,10 @@
 * link:https://assertj.github.io/doc/#assertj-db[assertj-db]
 * link:https://assertj.github.io/doc/#assertj-core[assertj-core]
 
+*-neue links-*
+
+* link:https://www.programiz.com/java-programming/printwriter[Java PrintWriter]
+
 ====
 
 == Entity
@@ -544,3 +548,93 @@ public class Person extends PanacheEntityBase {
 ----
 ====
 
+== Nachtest
+
+=== Node
+
+[source,java]
+----
+@ManyToOne()
+private Node next;
+----
+
+=== List
+
+[source, java]
+----
+@ManyToOne()
+private Node first
+
+addNode(Node node){
+    if(first == null){
+        setFirst(node);
+    }else{
+        node.setNext(first);
+        first = node;
+    }
+}
+
+removeNode(Node n){
+    Node curr = getFirst();
+    Node prev = null;
+
+        if (curr != null && curr.equals(n)){
+            setFirst(curr.getNext());
+        }else{
+
+            while (curr.next != null && !curr.equals(n)){
+                prev = curr;
+                curr = curr.next;
+            }
+
+            if (curr != null){
+                prev.next = curr.next;
+            }
+        }
+    }
+}
+
+getListOfNodes() {
+    List<Node> nodes = new LinkedList<>();
+    Node node = getFirst();
+
+    if(node != null) {
+        nodes.add(node);
+    }
+
+    do {
+        if(node != null && node.getNext() != null) {
+            node = node.getNext();
+            nodes.add(node);
+        }
+    }while (node != null && node.getNext() != null);
+    return nodes;
+}
+
+getBiggestValue(){
+    List<Node> node = getListOfNodes();
+    Collections.max(nodes.stream().map(Node::value).collect(Collectors.toList));
+}
+
+resetValues() {
+    for(Node node : getListOfNodes()){
+        node.setValue(0);
+    }
+}
+
+toString() {
+    StringBuilder sb = StringBuilder();
+
+    sb.append("[first] > ")
+
+    List<Node> nodes = getListOfNodes();
+
+    for(Node node : nodes) {
+        sb.append(String.format("%d", node.getValue()));
+    }
+
+    sb.append("[null]");
+
+    return sb.toString();
+}
+----
