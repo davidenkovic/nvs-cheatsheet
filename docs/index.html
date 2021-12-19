@@ -478,6 +478,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_application_properties_for_hibernate">8. Application Properties for Hibernate</a></li>
 <li><a href="#_rbac">9. RBAC</a></li>
 <li><a href="#_read_json">10. Read Json</a></li>
+<li><a href="#_nachtest">11. Nachtest</a>
+<ul class="sectlevel2">
+<li><a href="#_node">11.1. Node</a></li>
+<li><a href="#_list">11.2. List</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -541,6 +547,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li>
 <p><a href="https://assertj.github.io/doc/#assertj-core">assertj-core</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>-neue links-</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.programiz.com/java-programming/printwriter">Java PrintWriter</a></p>
 </li>
 </ul>
 </div>
@@ -1146,10 +1162,106 @@ Authorization: Basic admin admin</code></pre>
 </details>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_nachtest"><a class="anchor" href="#_nachtest"></a>11. Nachtest</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_node"><a class="anchor" href="#_node"></a>11.1. Node</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@ManyToOne</span><span class="o">()</span>
+<span class="kd">private</span> <span class="nc">Node</span> <span class="n">next</span><span class="o">;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_list"><a class="anchor" href="#_list"></a>11.2. List</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@ManyToOne</span><span class="o">()</span>
+<span class="kd">private</span> <span class="nc">Node</span> <span class="n">first</span>
+
+<span class="nf">addNode</span><span class="o">(</span><span class="nc">Node</span> <span class="n">node</span><span class="o">){</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">first</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+        <span class="n">setFirst</span><span class="o">(</span><span class="n">node</span><span class="o">);</span>
+    <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="n">node</span><span class="o">.</span><span class="na">setNext</span><span class="o">(</span><span class="n">first</span><span class="o">);</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="n">node</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">removeNode</span><span class="o">(</span><span class="nc">Node</span> <span class="n">n</span><span class="o">){</span>
+    <span class="nc">Node</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">getFirst</span><span class="o">();</span>
+    <span class="nc">Node</span> <span class="n">prev</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">curr</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">curr</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">n</span><span class="o">)){</span>
+            <span class="n">setFirst</span><span class="o">(</span><span class="n">curr</span><span class="o">.</span><span class="na">getNext</span><span class="o">());</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+
+            <span class="k">while</span> <span class="o">(</span><span class="n">curr</span><span class="o">.</span><span class="na">next</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">curr</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">n</span><span class="o">)){</span>
+                <span class="n">prev</span> <span class="o">=</span> <span class="n">curr</span><span class="o">;</span>
+                <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="n">curr</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+                <span class="n">prev</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">curr</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">getListOfNodes</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Node</span><span class="o">&gt;</span> <span class="n">nodes</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedList</span><span class="o">&lt;&gt;();</span>
+    <span class="nc">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">getFirst</span><span class="o">();</span>
+
+    <span class="k">if</span><span class="o">(</span><span class="n">node</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">node</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="k">do</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">node</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">node</span><span class="o">.</span><span class="na">getNext</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="na">getNext</span><span class="o">();</span>
+            <span class="n">nodes</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">node</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span><span class="k">while</span> <span class="o">(</span><span class="n">node</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">node</span><span class="o">.</span><span class="na">getNext</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">nodes</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="n">getBiggestValue</span><span class="o">(){</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Node</span><span class="o">&gt;</span> <span class="n">node</span> <span class="o">=</span> <span class="n">getListOfNodes</span><span class="o">();</span>
+    <span class="nc">Collections</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">nodes</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">map</span><span class="o">(</span><span class="nl">Node:</span><span class="o">:</span><span class="n">value</span><span class="o">).</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">));</span>
+<span class="o">}</span>
+
+<span class="n">resetValues</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">for</span><span class="o">(</span><span class="nc">Node</span> <span class="n">node</span> <span class="o">:</span> <span class="n">getListOfNodes</span><span class="o">()){</span>
+        <span class="n">node</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">StringBuilder</span> <span class="n">sb</span> <span class="o">=</span> <span class="nc">StringBuilder</span><span class="o">();</span>
+
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"[first] &gt; "</span><span class="o">)</span>
+
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Node</span><span class="o">&gt;</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">getListOfNodes</span><span class="o">();</span>
+
+    <span class="k">for</span><span class="o">(</span><span class="nc">Node</span> <span class="n">node</span> <span class="o">:</span> <span class="n">nodes</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"%d"</span><span class="o">,</span> <span class="n">node</span><span class="o">.</span><span class="na">getValue</span><span class="o">()));</span>
+    <span class="o">}</span>
+
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"[null]"</span><span class="o">);</span>
+
+    <span class="k">return</span> <span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-12-03 07:19:34 UTC
+Last updated 2021-12-19 21:43:54 UTC
 </div>
 </div>
 <style>
