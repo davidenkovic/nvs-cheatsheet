@@ -27,6 +27,7 @@
 *-neue links-*
 
 * link:https://www.programiz.com/java-programming/printwriter[Java PrintWriter]
+* link:https://www.logicbig.com/how-to/code-snippets/jcode-java-io-files-write.html[Java Write]
 
 ====
 
@@ -337,6 +338,21 @@ quarkus.hibernate-orm.database.generation = drop-and-create
 
 == RBAC
 
+.obect builder
+[source,java]
+----
+@GET
+@RolesAllowed({"Admin"})
+@Produces(MediaType.TEXT_PLAIN)
+@Path("/admin")
+public Response adminResource() {
+    JsonObjectBuilder jsonObject = Json.createObjectBuilder();
+    jsonObject.add("content", "this is for the admin");
+    jsonObject.add("user", securityIdentity.getPrincipal().getName());
+    return Response.ok(jsonObject.build()).build();
+}
+----
+
 .HTTP Request
 [source,http request]
 ----
@@ -565,7 +581,7 @@ private Node next;
 @ManyToOne()
 private Node first
 
-addNode(Node node){
+public void addNode(Node node){
     if(first == null){
         setFirst(node);
     }else{
@@ -574,7 +590,20 @@ addNode(Node node){
     }
 }
 
-removeNode(Node n){
+public void insert(int position, Node newNode) {
+     if (position == 0) {
+        newNode.next = head;
+        head = newNode;
+    } else {
+        Node<T> node = head;
+        while (--position > 0) {
+            node = node.next;
+        }
+        newNode.next = node.next;
+        node.next = newNode;
+    }
+
+public void removeNode(Node n){
     Node curr = getFirst();
     Node prev = null;
 
@@ -594,7 +623,7 @@ removeNode(Node n){
     }
 }
 
-getListOfNodes() {
+public List<Node> getListOfNodes() {
     List<Node> nodes = new LinkedList<>();
     Node node = getFirst();
 
@@ -611,18 +640,18 @@ getListOfNodes() {
     return nodes;
 }
 
-getBiggestValue(){
+public List<Node> getBiggestValue(){
     List<Node> node = getListOfNodes();
     Collections.max(nodes.stream().map(Node::value).collect(Collectors.toList));
 }
 
-resetValues() {
+public void resetValues() {
     for(Node node : getListOfNodes()){
         node.setValue(0);
     }
 }
 
-toString() {
+public String toString() {
     StringBuilder sb = StringBuilder();
 
     sb.append("[first] > ")
@@ -636,5 +665,24 @@ toString() {
     sb.append("[null]");
 
     return sb.toString();
+}
+----
+
+=== Node Sort
+
+[source,java]
+----
+node.sort(Compartor.comparingInt(Node::Atrribute));
+----
+
+== Schreiben von Daten
+
+[source, java]
+----
+String fileName = "my-file.txt";
+try{
+List<String> lines = Arrays.asList("The first line", "The second line");
+Path file = Paths.get(fileName);
+Files.write(file, lines, StandardCharsets.UTF_8);
 }
 ----
